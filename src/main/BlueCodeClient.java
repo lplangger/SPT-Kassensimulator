@@ -1,11 +1,8 @@
 package main;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
-import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -17,16 +14,38 @@ import javax.ws.rs.core.Response;
 public class BlueCodeClient {
 
 	final private Client client;
-	private String mailjetHost;
+	private String bluecodeHost; // https://api.mailjet.com --> hhtps://merchant-api.bluecode.com
 
-	public BlueCodeClient(String mailjetHost, String user, String password) {
+	public BlueCodeClient(String bluecodeHost, String user, String password) {
 		this.client = ClientBuilder.newClient();
 		client.register(new BasicAuthenticator(user, password));
-		this.mailjetHost = mailjetHost;
+		this.bluecodeHost = bluecodeHost;
 	}
 
-	public ArrayList<String> postRequestWithDataResponse(String path)
-			throws IOException {
+	void call(){
+		 WebTarget webTarget = client.target(mailjetHost).path(path);
+
+	        ObjectMapper mapper = new ObjectMapper();
+	       
+	        Response response
+	                = getInvocationBuilder(webTarget).post(
+	                Entity.entity(mapper.writeValueAsString(jsonMap),
+	                        MediaType.APPLICATION_JSON_TYPE));
+
+	        MailJetDataResponse mailJetResponse = null;
+	        if (response.getStatus() == Response.Status.OK.getStatusCode() ||
+	                response.getStatus() == Response.Status.CREATED.getStatusCode()) {
+	            mailJetResponse = mapper.readValue(response.readEntity(String.class), MailJetDataResponse.class);
+	        } else {
+	            throw new MailjetClientException(
+	                    "Error Mailjet request, status: " + response.getStatus());
+	        }
+	        return mailJetResponse;
+	}
+	
+	
+	
+	public ArrayList<String> postRequestWithDataResponse(String path) throws IOException {
 
 		WebTarget webTarget = client.target(mailjetHost).path(path);
 		getInvocationBuilder(webTarget).post(Entity.entity(entity, mediaType)(name, type, data));

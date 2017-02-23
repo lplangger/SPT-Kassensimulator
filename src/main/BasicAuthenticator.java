@@ -21,7 +21,6 @@ public class BasicAuthenticator implements ClientRequestFilter {
 		MultivaluedMap<String, Object> headers = requestContext.getHeaders();
 		final String basicAuthentication = getBasicAuthentication();
 		headers.add("Authorization", basicAuthentication);
-
 	}
 
 	private String getBasicAuthentication() {
@@ -32,5 +31,4 @@ public class BasicAuthenticator implements ClientRequestFilter {
 			throw new IllegalStateException("Cannot encode with UTF-8", ex);
 		}
 	}
-
 }
