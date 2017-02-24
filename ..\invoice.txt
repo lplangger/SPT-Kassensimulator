@@ -1,3 +1,0 @@
-The first line
-The second line
-{"state":"ERROR","type":"INVALID_REQUEST","code":"INVALID_BARCODE"}
